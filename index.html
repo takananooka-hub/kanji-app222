@@ -1,0 +1,410 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>小学校２年生で習うかんじアプリ</title><style>
+:root{font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Noto Sans CJK JP",sans-serif;color:#283b4c;background:#f1f8fd}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1160px;margin:auto;padding:24px 16px 80px}.hero{background:linear-gradient(110deg,#ffdeaf,#ffeef0 54%,#d6f0ff);border-radius:26px;padding:27px 30px;box-shadow:0 5px 20px #bad3e133}.hero h1{font-size:clamp(25px,4vw,39px);margin:0 0 8px;color:#674a55}.hero p{margin:0;font-weight:bold;color:#7a6771}.star{font-size:26px}.panel{background:white;padding:20px;border-radius:22px;margin-top:18px;box-shadow:0 4px 13px #9dbdd41a}.step{font-weight:900;font-size:17px;margin:0 0 12px}.tabs,.categories,.modes,.actions{display:flex;flex-wrap:wrap;gap:9px}button{font:inherit;cursor:pointer;border:2px solid #d2e1ec;background:#fff;border-radius:13px;padding:10px 18px;color:#314962;font-weight:800}button.active{background:#377db1;color:#fff;border-color:#377db1}button:disabled{opacity:.42;cursor:not-allowed}.sub{font-size:13px;color:#65758a;margin:9px 0}.modes button.active{background:#eb7292;border-color:#eb7292}.kanji-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.item{border:2px solid #dce8f0;background:#fbfdff;border-radius:16px;padding:11px;min-width:0}.kanji{font-size:38px;font-weight:900;display:inline-block;color:#3e6c93}.item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.little{font-size:12px;color:#8b97a8}.word{font-size:14px;text-align:left;padding:8px 7px;width:100%;margin:4px 0;border-radius:10px;display:flex;gap:8px;align-items:center;line-height:1.25;font-weight:600}.word span{background:#e5edf6;color:#53738a;font-size:11px;padding:3px 5px;border-radius:6px;flex-shrink:0}.word.selected{background:#fff0c2;border-color:#edae38;color:#735020}.word.selected span{background:#ffcc70;color:#6e4c1d}.status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.count{font-weight:900;color:#d55c7f;font-size:20px}.selected-list{min-height:44px;display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{border-radius:100px;background:#fff3d9;border:1px solid #f0d7a5;padding:6px 12px;font-size:13px}.actions button{padding:13px 20px;background:#337f9f;color:white;border-color:#337f9f}.actions button.answer{background:#7e77b8;border-color:#7e77b8}.actions button.clear{color:#65758a;background:white;border-color:#d2e1ec}.alert{color:#bb3860;font-weight:800;min-height:24px}.notice{font-size:13px;color:#61778a;line-height:1.7}input[type=text]{border:2px solid #d9e5ec;border-radius:10px;padding:9px;font:inherit;width:280px;max-width:100%}.settings{display:flex;flex-wrap:wrap;gap:14px;align-items:center}.settings label{font-weight:bold}.settings input{margin-left:7px}.foot{color:#758c9b;text-align:center;font-size:12px;padding-top:16px}@media(max-width:830px){.kanji-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:440px){.kanji-grid{grid-template-columns:1fr}.wrap{padding:12px}.hero{padding:19px}.panel{padding:14px}}
+</style></head><body><main class="wrap"><header class="hero"><h1><span class="star">🌸</span> 小学校２年生で習うかんじアプリ <span class="star">✏️</span></h1><p>すきな かんじ・ことばを 10もんまで えらぼう！</p></header>
+<section class="panel"><p class="step">① もんだいの しゅるいを えらぼう</p><div id="modes" class="modes"><button data-mode="write" class="active">✏️ かきとり</button><button data-mode="read">📖 よみとり</button></div><p class="sub">かきとり：漢字を書く　／　よみとり：漢字の読みをひらがなで書く</p></section>
+<section class="panel"><p class="step">② かんじの ぎょうを えらぼう</p><div class="tabs" id="rows"></div><p class="step" style="margin-top:18px">③ ことばの しゅるいを えらぼう</p><div class="categories" id="categories"><button data-cat="all" class="active">1　ぜんぶ</button><button data-cat="A">2　漢字＋ひらがな</button><button data-cat="B">3　まざったことば</button><button data-cat="C">4　漢字のじゅくご</button></div><p class="sub">１〜８行目と、１〜４のことばのしゅるいを切りかえられます。言葉をクリックすると選べます。</p></section>
+<section class="panel"><div class="status"><p class="step" style="margin:0">④ もんだいに したい ことばを えらぼう</p><div class="count" id="count">0 / 10 もん</div></div><div class="kanji-grid" id="grid"></div></section>
+<section class="panel"><p class="step">⑤ できたら PDF を つくろう！ 🎉</p><div class="settings"><label>なまえ（プリント上部）<input id="student" type="text" placeholder="空欄でもOK" maxlength="30"></label></div><div class="selected-list" id="selectedList"></div><p class="alert" id="alert"></p><div class="actions"><button id="problem">📄 もんだい PDF をダウンロード</button><button class="answer" id="answer">✅ こたえ PDF をダウンロード</button><button class="clear" id="clear">選択をぜんぶ消す</button></div><p class="notice">問題と答えは、それぞれA4サイズの縦書きPDFです。書き取りではマスの右に読みを示し、残りの文字をマスの上下に縦書きで配置します。</p></section><div class="foot">🌈 160字・全8行　｜　パソコンでもタブレットでも使えます　｜　オフラインでもPDF作成可能</div></main><script>
+const RAW=`引|引く|引き金|引力|ひく|ひきがね|いんりょく
+羽|羽ばたく|羽の音|羽毛|はばたく|はねのおと|うもう
+雲|—|雲の上|雨雲||くものうえ|あまぐも
+園|—|園の中|公園||えんのなか|こうえん
+遠|遠い|遠い山|遠足|とおい|とおいやま|えんそく
+何|何か|何の音|何人|なにか|なんのおと|なんにん
+科|—|理科の本|理科||りかのほん|りか
+夏|—|夏休み|—||なつやすみ|
+家|—|家の中|家出||いえのなか|いえで
+歌|歌う|歌の本|校歌|うたう|うたのほん|こうか
+画|—|画用紙にかく|図画||がようしにかく|ずが
+回|回る|回り道|一回|まわる|まわりみち|いっかい
+会|会う|会いに行く|会社|あう|あいにいく|かいしゃ
+海|—|海の中|海水||うみのなか|かいすい
+絵|—|絵をかく|絵本||えをかく|えほん
+外|外れる|外の空気|外国|はずれる|そとのくうき|がいこく
+角|—|角の先|三角||かどのさき|さんかく
+楽|楽しい|楽しい日|音楽|たのしい|たのしいひ|おんがく
+活|—|活きのいい魚|生活||いきのいいさかな|せいかつ
+間|間に合う|家と学校の間|時間|まにあう|いえとがっこうのあいだ|じかん
+丸|丸い|丸い石|丸太|まるい|まるいいし|まるた
+岩|—|岩の上|岩山||いわのうえ|いわやま
+顔|—|顔を出す|顔色||かおをだす|かおいろ
+汽|—|汽車にのる|汽車||きしゃにのる|きしゃ
+記|記す|日記を書く|日記|しるす|にっきをかく|にっき
+帰|帰る|帰り道|帰国|かえる|かえりみち|きこく
+弓|—|弓を引く|弓矢||ゆみをひく|ゆみや
+牛|—|牛の肉|牛肉||うしのにく|ぎゅうにく
+魚|—|魚を食べる|金魚||さかなをたべる|きんぎょ
+京|—|京の町|東京||きょうのまち|とうきょう
+強|強い|強い風|強風|つよい|つよいかぜ|きょうふう
+教|教える|教え方|教室|おしえる|おしえかた|きょうしつ
+近|近い|近い学校|近道|ちかい|ちかいがっこう|ちかみち
+兄|—|兄の本|兄弟||あにのほん|きょうだい
+形|—|形をかく|図形||かたちをかく|ずけい
+計|計る|計り方|計算|はかる|はかりかた|けいさん
+元|—|元気な子|元気||げんきなこ|げんき
+言|言う|言い方|言語|いう|いいかた|げんご
+原|—|原っぱであそぶ|野原||はらっぱであそぶ|のはら
+戸|—|戸をしめる|戸口||とをしめる|とぐち
+古|古い|古い本|中古|ふるい|ふるいほん|ちゅうこ
+午|—|午前の会|午前||ごぜんのかい|ごぜん
+後|後ろ|後ろの人|午後|うしろ|うしろのひと|ごご
+語|—|物語を読む|国語||ものがたりをよむ|こくご
+工|—|工事をする|工作||こうじをする|こうさく
+公|—|公園であそぶ|公園||こうえんであそぶ|こうえん
+広|広い|広い空|広場|ひろい|ひろいそら|ひろば
+交|交わる|交わる道|交通|まじわる|まじわるみち|こうつう
+光|光る|光る星|日光|ひかる|ひかるほし|にっこう
+考|考える|考え方|考え|かんがえる|かんがえかた|かんがえ
+行|行く|行き先|行動|いく|いきさき|こうどう
+高|高い|高い山|高校|たかい|たかいやま|こうこう
+黄|黄色い|黄色い花|黄色|きいろい|きいろいはな|きいろ
+合|合う|合わせ方|合計|あう|あわせかた|ごうけい
+谷|—|谷の水|谷川||たにのみず|たにがわ
+国|—|国の中|外国||くにのなか|がいこく
+黒|黒い|黒い犬|黒色|くろい|くろいいぬ|くろいろ
+今|—|今の時間|今日||いまのじかん|きょう
+才|—|六才の子|天才||ろくさいのこ|てんさい
+細|細い|細い糸|細工|ほそい|ほそいいと|さいく
+作|作る|作り方|作文|つくる|つくりかた|さくぶん
+算|—|算数の本|算数||さんすうのほん|さんすう
+止|止まる|止まる車|中止|とまる|とまるくるま|ちゅうし
+市|—|—|市長|||しちょう
+矢|—|矢をとばす|弓矢||やをとばす|ゆみや
+姉|—|姉の本|姉妹||あねのほん|しまい
+思|思う|思い出|思考|おもう|おもいで|しこう
+紙|—|紙を切る|色紙||かみをきる|いろがみ
+寺|—|寺の前|寺社||てらのまえ|じしゃ
+自|—|自分で書く|自分||じぶんでかく|じぶん
+時|—|時を知らせる|時間||ときをしらせる|じかん
+室|—|—|教室|||きょうしつ
+社|—|会社に行く|社会||かいしゃにいく|しゃかい
+弱|弱い|弱い風|弱点|よわい|よわいかぜ|じゃくてん
+首|—|首をふる|首元||くびをふる|くびもと
+秋|—|秋の空|秋分||あきのそら|しゅうぶん
+週|—|週に二回|今週||しゅうににかい|こんしゅう
+春|—|春の花|春分||はるのはな|しゅんぶん
+書|書く|書き方|読書|かく|かきかた|どくしょ
+少|少ない|少ない水|少年|すくない|すくないみず|しょうねん
+場|—|場をかえる|場所||ばをかえる|ばしょ
+色|—|色のちがい|色紙||いろのちがい|いろがみ
+食|食べる|食べ方|食事|たべる|たべかた|しょくじ
+心|—|心の中|中心||こころのなか|ちゅうしん
+新|新しい|新しい本|新聞|あたらしい|あたらしいほん|しんぶん
+親|親しい|親しい友だち|親子|したしい|したしいともだち|おやこ
+図|—|図をかく|地図||ずをかく|ちず
+数|数える|数え方|算数|かぞえる|かぞえかた|さんすう
+西|—|西の空|西口||にしのそら|にしぐち
+声|—|声を出す|大声||こえをだす|おおごえ
+星|—|星の光|火星||ほしのひかり|かせい
+晴|晴れる|晴れの日|晴天|はれる|はれのひ|せいてん
+切|切る|切り方|大切|きる|きりかた|たいせつ
+雪|—|雪がふる|大雪||ゆきがふる|おおゆき
+船|—|船にのる|船長||ふねにのる|せんちょう
+線|—|線を引く|直線||せんをひく|ちょくせん
+前|—|前に出る|午前||まえにでる|ごぜん
+組|組む|組み立てる|一組|くむ|くみたてる|ひとくみ
+走|走る|走り方|走行|はしる|はしりかた|そうこう
+多|多い|多くの人|多数|おおい|おおくのひと|たすう
+太|太い|太い木|太字|ふとい|ふといき|ふとじ
+体|—|体をうごかす|体力||からだをうごかす|たいりょく
+台|—|台の上|台風||だいのうえ|たいふう
+地|—|地図をかく|地図||ちずをかく|ちず
+池|—|池の中|電池||いけのなか|でんち
+知|知る|知らせる|知人|しる|しらせる|ちじん
+茶|—|茶をのむ|茶色||ちゃをのむ|ちゃいろ
+昼|—|昼の時間|昼食||ひるのじかん|ちゅうしょく
+長|長い|長い道|校長|ながい|ながいみち|こうちょう
+鳥|—|鳥の声|小鳥||とりのこえ|ことり
+朝|—|朝の会|朝日||あさのかい|あさひ
+直|直す／直る|直し方|直線|なおす／なおる|なおしかた|ちょくせん
+通|通る／通う|通り道|交通|とおる／かよう|とおりみち|こうつう
+弟|—|弟の本|兄弟||おとうとのほん|きょうだい
+店|—|店に行く|店内||みせにいく|てんない
+点|—|点をうつ|点数||てんをうつ|てんすう
+電|—|電気をつける|電車||でんきをつける|でんしゃ
+刀|—|刀をもつ|日本刀||かたなをもつ|にほんとう
+冬|—|冬休み|—||ふゆやすみ|
+当|当たる|当たり前|本当|あたる|あたりまえ|ほんとう
+東|—|東の空|東京||ひがしのそら|とうきょう
+答|答える|答え方|答案|こたえる|こたえかた|とうあん
+頭|—|頭の上|先頭||あたまのうえ|せんとう
+同|同じ|同じ学校|同時|おなじ|おなじがっこう|どうじ
+道|—|道を歩く|道路||みちをあるく|どうろ
+読|読む|読み方|読書|よむ|よみかた|どくしょ
+内|—|家の内と外|校内||いえのうちとそと|こうない
+南|—|南の空|南国||みなみのそら|なんごく
+肉|—|肉を食べる|牛肉||にくをたべる|ぎゅうにく
+馬|—|馬にのる|馬車||うまにのる|ばしゃ
+売|売る|売り場|売買|うる|うりば|ばいばい
+買|買う|買い物|売買|かう|かいもの|ばいばい
+麦|—|麦をそだてる|小麦||むぎをそだてる|こむぎ
+半|—|半分に切る|半分||はんぶんにきる|はんぶん
+番|—|番をまつ|一番||ばんをまつ|いちばん
+父|—|父の本|父母||ちちのほん|ふぼ
+風|—|風がふく|台風||かぜがふく|たいふう
+分|分ける|分け方|自分|わける|わけかた|じぶん
+聞|聞く|聞き方|新聞|きく|ききかた|しんぶん
+米|—|米をたく|白米||こめをたく|はくまい
+歩|歩く|歩き方|散歩|あるく|あるきかた|さんぽ
+母|—|母の手|父母||ははのて|ふぼ
+方|—|方をむく|方向||ほうをむく|ほうこう
+北|—|北の空|北風||きたのそら|きたかぜ
+毎|—|毎日書く|毎日||まいにちかく|まいにち
+妹|—|妹の本|姉妹||いもうとのほん|しまい
+万|—|一万円を数える|一万||いちまんえんをかぞえる|いちまん
+明|明るい|明るい空|明日|あかるい|あかるいそら|あした
+鳴|鳴く／鳴る|鳴き声|鳴き声|なく／なる|なきごえ|なきごえ
+毛|—|毛が生える|羽毛||けがはえる|うもう
+門|—|門の前|校門||もんのまえ|こうもん
+夜|—|夜の空|今夜||よるのそら|こんや
+野|—|野にさく花|野原||のにさくはな|のはら
+友|—|友だちとあそぶ|友人||ともだちとあそぶ|ゆうじん
+用|用いる|用がある日|用心|もちいる|ようがあるひ|ようじん
+曜|—|曜日を書く|曜日||ようびをかく|ようび
+来|来る|来た人|来年|くる|きたひと|らいねん
+里|—|里の山|里山||さとのやま|さとやま
+理|—|理科の本|理科||りかのほん|りか
+話|話す|話し方|会話|はなす|はなしかた|かいわ`;
+const rowsData=RAW.trim().split('\n').map((s,i)=>{const [kanji,A,B,C,a,b,c]=s.split('|');return {id:i,kanji,A,B,C,a,b,c,row:Math.floor(i/20)+1}});
+let row=1,cat='all',mode='write';let selected=[];
+const $=x=>document.getElementById(x);
+const rowTitles=['引〜間','丸〜戸','古〜細','作〜少','場〜多','太〜当','東〜米','歩〜話'];
+function choices(item){return [['A',item.A,item.a],['B',item.B,item.b],['C',item.C,item.c]].filter(x=>x[1]&&x[1]!=='—').flatMap(([type,word,reading])=>word.split('／').map((w,i)=>({id:item.id+'-'+type+'-'+i,kanji:item.kanji,word:w,reading:reading.split('／')[i]||reading,type,row:item.row})));}
+function getChoices(item){return choices(item).filter(x=>cat==='all'||x.type===cat)}
+function redraw(){ $('rows').innerHTML=Array.from({length:8},(_,i)=>`<button class="${row===i+1?'active':''}" data-row="${i+1}">${i+1}行目　${rowTitles[i]}</button>`).join(''); $('rows').querySelectorAll('button').forEach(b=>b.onclick=()=>{row=Number(b.dataset.row);redraw()}); $('categories').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));$('modes').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));$('grid').innerHTML=rowsData.filter(x=>x.row===row).map(x=>`<article class="item"><div class="item-head"><span class="kanji">${x.kanji}</span><span class="little">${x.id%20+1} / 20</span></div>${getChoices(x).map(w=>`<button class="word ${selected.some(s=>s.id===w.id)?'selected':''}" data-id="${w.id}"><span>${w.type}</span>${w.word}（${w.reading}）</button>`).join('')||'<p class="sub">このしゅるいの言葉はありません</p>'}</article>`).join('');$('grid').querySelectorAll('.word').forEach(b=>b.onclick=()=>toggle(b.dataset.id));$('count').textContent=selected.length+' / 10 もん';$('selectedList').innerHTML=selected.length?selected.map((x,i)=>`<button class="chip" data-remove="${x.id}" title="クリックして取り消し">${i+1}. ${x.kanji}：${x.word} ×</button>`).join(''):'<span class="sub">まだ えらばれていません。ことばをクリックしてね。</span>';$('selectedList').querySelectorAll('button').forEach(b=>b.onclick=()=>toggle(b.dataset.remove));}
+function toggle(id){let idx=selected.findIndex(x=>x.id===id);$('alert').textContent='';if(idx>=0)selected.splice(idx,1);else {if(selected.length>=10){$('alert').textContent='10もんまでです。どれか１つ消してください。';return}let w=rowsData.flatMap(choices).find(x=>x.id===id);if(w)selected.push(w);}redraw()}
+$('categories').querySelectorAll('button').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;redraw()});$('modes').querySelectorAll('button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;redraw()});$('clear').onclick=()=>{selected=[];$('alert').textContent='';redraw()};
+// PDFs are generated entirely inside the browser from a Japanese-text canvas.
+const PW=2480, PH=3508;
+function font(size,weight='700'){return `${weight} ${size}px "Yu Gothic","Hiragino Kaku Gothic ProN","Noto Sans CJK JP",sans-serif`}
+function text(ctx,str,x,y,size,color='#2c455a',weight='700',align='left'){ctx.fillStyle=color;ctx.font=font(size,weight);ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(str,x,y)}
+function round(ctx,x,y,w,h,r,fill,stroke,lw=3){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function drawVertical(g,value,x,startY,step,size,color='#293f57',weight='700'){
+  [...value].forEach((ch,i)=>text(g,ch,x,startY+i*step,size,color,weight,'center'));
+}
+const KANJI_RE=/[\u3400-\u9fff々]/u;
+const KANA_RE=/[ぁ-ゖァ-ヺー]/u;
+const base={引:'ひ',羽:'は',雲:'くも',園:'えん',遠:'とお',何:'なに',科:'か',夏:'なつ',家:'いえ',歌:'うた',画:'が',回:'まわ',会:'あ',海:'うみ',絵:'え',外:'そと',角:'かど',楽:'たの',活:'い',間:'あいだ',丸:'まる',岩:'いわ',顔:'かお',汽:'き',記:'しる',帰:'かえ',弓:'ゆみ',牛:'うし',魚:'さかな',京:'きょう',強:'つよ',教:'おし',近:'ちか',兄:'あに',形:'かたち',計:'はか',元:'げん',言:'い',原:'はら',戸:'と',古:'ふる',午:'ご',後:'うし',語:'ご',工:'こう',公:'こう',広:'ひろ',交:'まじ',光:'ひか',考:'かんが',行:'い',高:'たか',黄:'き',合:'あ',谷:'たに',国:'くに',黒:'くろ',今:'いま',才:'さい',細:'ほそ',作:'つく',算:'さん',止:'と',市:'し',矢:'や',姉:'あね',思:'おも',紙:'かみ',寺:'てら',自:'じ',時:'とき',室:'しつ',社:'しゃ',弱:'よわ',首:'くび',秋:'あき',週:'しゅう',春:'はる',書:'か',少:'すく',場:'ば',色:'いろ',食:'た',心:'こころ',新:'あたら',親:'した',図:'ず',数:'かぞ',西:'にし',声:'こえ',星:'ほし',晴:'は',切:'き',雪:'ゆき',船:'ふね',線:'せん',前:'まえ',組:'く',走:'はし',多:'おお',太:'ふと',体:'からだ',台:'だい',地:'ち',池:'いけ',知:'し',茶:'ちゃ',昼:'ひる',長:'なが',鳥:'とり',朝:'あさ',直:'なお',通:'とお',弟:'おとうと',店:'みせ',点:'てん',電:'でん',刀:'かたな',冬:'ふゆ',当:'あ',東:'ひがし',答:'こた',頭:'あたま',同:'おな',道:'みち',読:'よ',内:'うち',南:'みなみ',肉:'にく',馬:'うま',売:'う',買:'か',麦:'むぎ',半:'はん',番:'ばん',父:'ちち',風:'かぜ',分:'わ',聞:'き',米:'こめ',歩:'ある',母:'はは',方:'ほう',北:'きた',毎:'まい',妹:'いもうと',万:'まん',明:'あか',鳴:'な',毛:'け',門:'もん',夜:'よる',野:'の',友:'とも',用:'もち',曜:'よう',来:'く',里:'さと',理:'り',話:'はな'};
+const on={引:'いん',羽:'う',雲:'ぐも',園:'えん',遠:'えん',何:'なん',科:'か',夏:'なつ',家:'か',歌:'か',画:'が',回:'かい',会:'かい',海:'かい',絵:'え',外:'がい',角:'かく',楽:'がく',活:'かつ',間:'かん',丸:'まる',岩:'がん',顔:'がん',汽:'き',記:'き',帰:'き',弓:'ゆみ',牛:'ぎゅう',魚:'ぎょ',京:'きょう',強:'きょう',教:'きょう',近:'ちか',兄:'きょう',形:'けい',計:'けい',元:'げん',言:'げん',原:'はら',戸:'と',古:'こ',午:'ご',後:'ご',語:'ご',工:'こう',公:'こう',広:'ひろ',交:'こう',光:'こう',考:'かんが',行:'こう',高:'こう',黄:'き',合:'ごう',谷:'たに',国:'こく',黒:'くろ',今:'こん',才:'さい',細:'さい',作:'さく',算:'さん',止:'し',市:'し',矢:'や',姉:'し',思:'し',紙:'がみ',寺:'じ',自:'じ',時:'じ',室:'しつ',社:'しゃ',弱:'じゃく',首:'くび',秋:'しゅう',週:'しゅう',春:'しゅん',書:'しょ',少:'しょう',場:'ば',色:'しょく',食:'しょく',心:'しん',新:'しん',親:'おや',図:'ず',数:'すう',西:'にし',声:'ごえ',星:'せい',晴:'せい',切:'せつ',雪:'ゆき',船:'せん',線:'せん',前:'ぜん',組:'くみ',走:'そう',多:'た',太:'た',体:'たい',台:'たい',地:'ち',池:'ち',知:'ち',茶:'ちゃ',昼:'ちゅう',長:'ちょう',鳥:'ちょう',朝:'ちょう',直:'ちょく',通:'つう',弟:'だい',店:'てん',点:'てん',電:'でん',刀:'とう',冬:'とう',当:'とう',東:'とう',答:'とう',頭:'とう',同:'どう',道:'どう',読:'どく',内:'ない',南:'なん',肉:'にく',馬:'ば',売:'ばい',買:'ばい',麦:'むぎ',半:'はん',番:'ばん',父:'ふ',風:'ふう',分:'ぶん',聞:'ぶん',米:'まい',歩:'ぽ',母:'ぼ',方:'こう',北:'ほく',毎:'まい',妹:'まい',万:'まん',明:'めい',鳴:'な',毛:'もう',門:'もん',夜:'や',野:'の',友:'ゆう',用:'よう',曜:'よう',来:'らい',里:'り',理:'り',話:'わ'};
+const extraReadingCandidates={
+  金:['きん','がね'],力:['りょく','ちから'],雨:['あま','あめ'],足:['そく','あし'],人:['にん','じん','ひと'],休:['やす','きゅう'],出:['だ','で','しゅつ'],
+  水:['すい','みず'],空:['くう','そら'],音:['おん','おと'],生:['せい','しょう','い','は','なま'],口:['ぐち','こう','くち'],物:['もの','ぶつ'],
+  事:['じ','こと'],動:['どう','うご'],川:['がわ','かわ'],糸:['いと'],所:['しょ','ところ'],大:['だい','たい','おお'],立:['た','りつ'],
+  字:['じ'],先:['せん','さき'],路:['ろ'],白:['はく','しろ'],散:['さん'],手:['て'],向:['こう','む'],円:['えん'],学:['がっ','がく'],
+  校:['こう'],年:['ねん','とし'],文:['ぶん'],気:['き'],光:['こう','ひかり'],会:['かい','あ'],分:['ぶん','ふん','わ'],車:['しゃ','くるま'],
+  日:['した','に','にっ','にち','ひ','び'],本:['ほん','もと'],午:['ご'],前:['ぜん','まえ'],後:['ご','あと','うし'],東:['とう','ひがし'],
+  西:['せい','にし'],南:['なん','みなみ'],北:['ほく','きた'],火:['か','ひ'],天:['てん'],案:['あん'],心:['じん','しん','こころ'],
+  一:['いっ','いち','ひと','い'],外:['はず','そと','がい'],間:['ま','あいだ','かん'],中:['ちゅう','なか'],語:['がたり','ご'],
+  工:['く','こう'],考:['こう','かんが'],小:['こ','しょう'],通:['かよ','とお','つう'],国:['ごく','こく','くに'],明:['あ','あか','めい'],
+  来:['き','く','らい']
+};
+const wordReadingCache=new Map();
+function readingCandidatesFor(ch){
+  const out=[];
+  const add=v=>{if(v&&!out.includes(v))out.push(v)};
+  (extraReadingCandidates[ch]||[]).forEach(add);
+  add(base[ch]);
+  add(on[ch]);
+  add(outsideRuby[ch]);
+  Object.values(rubyPhraseOverrides).forEach(map=>add(map[ch]));
+  return out;
+}
+function splitWordReadings(item){
+  const key=`${item.word}|${item.reading}`;
+  if(wordReadingCache.has(key))return wordReadingCache.get(key);
+  const word=item.word;
+  const reading=(item.reading||'').replace(/（.*?）/g,'');
+  const override=rubyPhraseOverrides[word]||{};
+  const memo=new Map();
+  function rec(i,j){
+    const memoKey=`${i}|${j}`;
+    if(memo.has(memoKey))return memo.get(memoKey);
+    if(i===word.length&&j===reading.length)return [];
+    if(i>=word.length||j>reading.length)return null;
+    const ch=word[i];
+    if(KANA_RE.test(ch)){
+      if(reading.startsWith(ch,j)){
+        const tail=rec(i+1,j+ch.length);
+        if(tail!==null){const ans=['',...tail];memo.set(memoKey,ans);return ans;}
+      }
+      memo.set(memoKey,null);return null;
+    }
+    if(!KANJI_RE.test(ch)){
+      if(reading.startsWith(ch,j)){
+        const tail=rec(i+1,j+ch.length);
+        if(tail!==null){const ans=['',...tail];memo.set(memoKey,ans);return ans;}
+      }
+      memo.set(memoKey,null);return null;
+    }
+    const rem=reading.slice(j);
+    const candidates=[];
+    if(override[ch]&&rem.startsWith(override[ch]))candidates.push({seg:override[ch],score:200});
+    readingCandidatesFor(ch).forEach((seg,idx)=>{if(rem.startsWith(seg))candidates.push({seg,score:100-idx})});
+    for(let len=1;len<=Math.min(5,rem.length);len++)candidates.push({seg:rem.slice(0,len),score:-10-len});
+    const uniq=[];const seen=new Set();
+    candidates.sort((a,b)=>b.score-a.score||a.seg.length-b.seg.length).forEach(c=>{if(!seen.has(c.seg)){seen.add(c.seg);uniq.push(c)}});
+    let best=null,bestScore=-Infinity;
+    for(const c of uniq){
+      const tail=rec(i+1,j+c.seg.length);
+      if(tail===null)continue;
+      if(c.score>bestScore){bestScore=c.score;best=[c.seg,...tail];}
+    }
+    memo.set(memoKey,best);return best;
+  }
+  const solved=rec(0,0)||[...word].map(ch=>KANJI_RE.test(ch)?'':'');
+  wordReadingCache.set(key,solved);
+  return solved;
+}
+function targetReading(item){
+  const parts=splitWordReadings(item);
+  const idx=item.word.indexOf(item.kanji);
+  return parts[idx]||((item.reading||'').replace(/（.*?）/g,''));
+}
+
+function makeCanvas(answer){
+  const canvas=document.createElement('canvas');canvas.width=PW;canvas.height=PH;
+  const g=canvas.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,PW,PH);
+  g.fillStyle=answer?'#ebf0ff':'#ffebf0';g.fillRect(0,0,PW,27);
+  text(g,answer?'🌟 こたえ あわせ 🌟':'🌸 かんじの れんしゅう 🌸',125,135,66,answer?'#67619f':'#ad5776');
+  text(g,mode==='write'?'かきとりプリント（たて書き）':'よみとりプリント（たて書き）',125,243,75,'#273c56');
+  text(g,answer?'こたえ':'もんだい',PW-125,244,55,'#7587aa','700','right');
+  g.strokeStyle='#b8c8d6';g.lineWidth=3;g.beginPath();g.moveTo(125,327);g.lineTo(PW-125,327);g.stroke();
+  text(g,'なまえ',140,394,39,'#5d6e7f');const name=$('student').value.trim();
+  text(g,name||'____________________________________',315,394,42,'#31455c','500');
+  text(g,`${selected.length}もん`,PW-140,398,40,'#63758b','700','right');
+  const x0=125,gap=66,cw=(PW-250-gap)/2,top=475,ch=554,rowgap=24;
+  selected.forEach((item,i)=>{
+    // Japanese vertical writing proceeds from the right-hand column to the left.
+    const x=x0+(1-i%2)*(cw+gap),y=top+Math.floor(i/2)*(ch+rowgap);
+    round(g,x,y,cw,ch,28,'#fff',answer?'#8ba8c8':'#c5dce9',4);
+    round(g,x+27,y+24,105,83,16,answer?'#e9edff':'#e3f5fb',null);
+    text(g,String(i+1),x+79,y+69,50,'#496b93','800','center');
+    text(g,`【${item.type}】`,x+165,y+68,35,'#7890a0');
+    if(mode==='read')drawReading(g,item,x,y,cw,ch,answer);
+    else drawWriting(g,item,x,y,cw,ch,answer);
+  });
+  text(g,'たて書きで ていねいに かこう！',125,PH-100,36,'#9eacba');
+  text(g,'小学校２年生で習うかんじアプリ',PW-125,PH-100,31,'#9eacba','500','right');
+  return canvas;
+}
+function drawGrid(g,x,y,s){
+  round(g,x,y,s,s,5,'#fff','#7b9bb0',5);
+  g.strokeStyle='#aac1d1';g.lineWidth=4;g.setLineDash([11,11]);
+  g.beginPath();g.moveTo(x+s/2,y+4);g.lineTo(x+s/2,y+s-4);
+  g.moveTo(x+4,y+s/2);g.lineTo(x+s-4,y+s/2);g.stroke();g.setLineDash([]);
+}
+function writingParts(item){
+  const index=item.word.indexOf(item.kanji);
+  return index<0?['',item.word]:[item.word.slice(0,index),item.word.slice(index+item.kanji.length)];
+}
+// Readings for other kanji printed outside the answer square.
+// A phrase-level override takes precedence because a kanji can have several readings.
+const outsideRuby={
+  '一':'いち','二':'に','三':'さん','六':'ろく','万':'まん','人':'ひと','子':'こ','山':'やま','石':'いし','上':'うえ','中':'なか','下':'した','先':'さき','本':'ほん','日':'ひ','月':'つき','年':'ねん','時':'じ','間':'あいだ','前':'まえ','後':'あと','空':'そら','水':'みず','木':'き','花':'はな','星':'ほし','犬':'いぬ','魚':'さかな','車':'くるま','町':'まち','風':'かぜ','音':'おと','気':'き','女':'おんな','男':'おとこ','道':'みち','学校':'がっこう',
+  '引':'ひ','羽':'はね','雲':'くも','園':'えん','遠':'とお','何':'なに','科':'か','夏':'なつ','家':'いえ','歌':'うた','画':'が','回':'かい','会':'かい','海':'うみ','絵':'え','外':'そと','角':'かど','楽':'たの','活':'い','丸':'まる','岩':'いわ','顔':'かお','汽':'き','記':'き','帰':'かえ','弓':'ゆみ','牛':'うし','京':'きょう','強':'つよ','教':'きょう','近':'ちか','兄':'あに','形':'かたち','計':'けい','元':'もと','言':'い','原':'はら','戸':'と','古':'ふる','午':'ご','語':'ご','工':'こう','公':'こう','広':'ひろ','交':'こう','光':'ひかり','考':'かんが','行':'い','高':'たか','黄':'き','合':'あ','谷':'たに','国':'くに','黒':'くろ','今':'いま','才':'さい','細':'ほそ','作':'つく','算':'さん','止':'と','市':'し','矢':'や','姉':'あね','思':'おも','紙':'かみ','寺':'てら','自':'じ','室':'しつ','社':'しゃ','弱':'よわ','首':'くび','秋':'あき','週':'しゅう','春':'はる','書':'か','少':'すく','場':'ば','色':'いろ','食':'た','心':'こころ','新':'あたら','親':'した','図':'ず','数':'かず','西':'にし','声':'こえ','晴':'は','切':'き','雪':'ゆき','船':'ふね','線':'せん','組':'くみ','走':'はし','多':'おお','太':'ふと','体':'からだ','台':'だい','地':'ち','池':'いけ','知':'し','茶':'ちゃ','昼':'ひる','長':'なが','鳥':'とり','朝':'あさ','直':'なお','通':'とお','弟':'おとうと','店':'みせ','点':'てん','電':'でん','刀':'かたな','冬':'ふゆ','当':'あ','東':'ひがし','答':'こた','頭':'あたま','同':'おな','読':'よ','内':'うち','南':'みなみ','肉':'にく','馬':'うま','売':'う','買':'か','麦':'むぎ','半':'はん','番':'ばん','父':'ちち','分':'わ','聞':'き','米':'こめ','歩':'ある','母':'はは','方':'ほう','北':'きた','毎':'まい','妹':'いもうと','明':'あか','鳴':'な','毛':'け','門':'もん','夜':'よる','野':'の','友':'とも','用':'もち','曜':'よう','来':'く','里':'さと','理':'り','話':'はな'
+};
+const rubyPhraseOverrides={
+  '首元':{'元':'もと','首':'くび'},'元気な子':{'元':'げん','気':'き','子':'こ'},
+  '理科の本':{'理':'り','科':'か','本':'ほん'},'家と学校の間':{'家':'いえ','学':'がっ','校':'こう','間':'あいだ'},
+  '日記を書く':{'日':'にっ','記':'き','書':'か'},'会いに行く':{'会':'あ','行':'い'},
+  '公園であそぶ':{'公':'こう','園':'えん'},'汽車にのる':{'汽':'き','車':'しゃ'},
+  '教室':{'教':'きょう','室':'しつ'},'教え方':{'教':'おし','方':'かた'},
+  '算数の本':{'算':'さん','数':'すう','本':'ほん'},'算数':{'算':'さん','数':'すう'},
+  '画用紙にかく':{'画':'が','用':'よう','紙':'し'},'図をかく':{'図':'ず'},
+  '図形':{'図':'ず','形':'けい'},'地図をかく':{'地':'ち','図':'ず'},
+  '色紙':{'色':'いろ','紙':'がみ'},'黄色い花':{'黄':'き','色':'いろ','花':'はな'},
+  '今日':{'今':'きょう','日':''},'毎日書く':{'毎':'まい','日':'にち','書':'か'},
+  '月曜日':{'月':'げつ','曜':'よう','日':'び'},'曜日を書く':{'曜':'よう','日':'び','書':'か'},
+  '友だちとあそぶ':{'友':'とも'},'兄の本':{'兄':'あに','本':'ほん'},
+  '姉の本':{'姉':'あね','本':'ほん'},'弟の本':{'弟':'おとうと','本':'ほん'},
+  '妹の本':{'妹':'いもうと','本':'ほん'},'父の本':{'父':'ちち','本':'ほん'},
+  '一万円を数える':{'一':'いち','万':'まん','円':'えん','数':'かぞ'},
+  '場をかえる':{'場':'ば'},'家の中':{'家':'いえ','中':'なか'},
+  '学校':{'学':'がっ','校':'こう'},'時を知らせる':{'時':'とき','知':'し'},
+  '週に二回':{'週':'しゅう','二':'に','回':'かい'},'六才の子':{'六':'ろく','才':'さい','子':'こ'},
+  '牛の肉':{'牛':'うし','肉':'にく'},'魚を食べる':{'魚':'さかな','食':'た'},
+  '書き方':{'書':'か','方':'かた'},'作り方':{'作':'つく','方':'かた'},
+  '考え方':{'考':'かんが','方':'かた'},'読み方':{'読':'よ','方':'かた'},
+  '直し方':{'直':'なお','方':'かた'},'聞き方':{'聞':'き','方':'かた'},
+  '買い物':{'買':'か','物':'もの'},'買いもの':{'買':'か'},
+  '鳴き声':{'鳴':'な','声':'ごえ'},'親しい友だち':{'親':'した','友':'とも'},
+  '天才':{'天':'てん','才':'さい'},'直線':{'直':'ちょく','線':'せん'},
+  '学校の間':{'学':'がっ','校':'こう','間':'あいだ'}
+};
+rubyPhraseOverrides['一回']={一:'いっ',回:'かい'};
+rubyPhraseOverrides['一番']={一:'いち',番:'ばん'};
+rubyPhraseOverrides['一万']={一:'いち',万:'まん'};
+// Words such as 首元 contain a second kanji, whose reading is displayed
+// beside that second character, including when it occurs above the square.
+function drawOutsideText(g,part,item,colX,startY,step,glyphSize,startIndex){
+  const parts=splitWordReadings(item);
+  [...part].forEach((ch,i)=>{
+    const cy=startY+i*step;
+    text(g,ch,colX,cy,glyphSize,'#293f57','700','center');
+    if(!KANJI_RE.test(ch))return;
+    const furigana=parts[startIndex+i]||(rubyPhraseOverrides[item.word]||{})[ch]||outsideRuby[ch];
+    if(!furigana)return;
+    const rubyStep=Math.min(23,Math.max(15,step/Math.max(furigana.length,2)));
+    const rubySize=Math.min(25,rubyStep+3);
+    drawVertical(g,furigana,colX+glyphSize/2+24,cy-(furigana.length-1)*rubyStep/2,rubyStep,rubySize,'#607b90','500');
+  });
+}
+function drawWriting(g,item,x,y,cw,ch,answer){
+  const index=item.word.indexOf(item.kanji);
+  const before=index<0?'':item.word.slice(0,index);
+  const after=index<0?item.word:item.word.slice(index+item.kanji.length);
+  const long=before.length+after.length;
+  const s=long>=10?112:long>=7?128:long>=5?148:175;
+  const step=long>=10?30:long>=7?37:long>=5?49:61;
+  const glyphSize=Math.min(65,step*1.08);
+  const squareGap=long>=9?12:20;
+  const beforeGap=before.length?squareGap:0;
+  const afterGap=after.length?squareGap:0;
+  const contentHeight=before.length*step+beforeGap+s+afterGap+after.length*step;
+  const yStart=y+Math.max(119,(ch-contentHeight)/2+27);
+  const colX=x+cw*.55;
+  drawOutsideText(g,before,item,colX,yStart+step/2,step,glyphSize,0);
+  const boxY=yStart+before.length*step+beforeGap;
+  drawGrid(g,colX-s/2,boxY,s);
+  if(answer)text(g,item.kanji,colX,boxY+s/2,Math.floor(s*.68),'#286e9d','700','center');
+  drawOutsideText(g,after,item,colX,boxY+s+afterGap+step/2,step,glyphSize,index+item.kanji.length);
+  const hint=targetReading(item);
+  const hintStep=Math.min(34,Math.max(24,s/(hint.length+0.5)));
+  drawVertical(g,hint,colX+s/2+51,boxY+s/2-(hint.length-1)*hintStep/2,hintStep,Math.min(34,hintStep+2),'#536f87','500');
+}
+function drawReading(g,item,x,y,cw,ch,answer){
+  // Vertical reading problem: the source phrase stays in one vertical column,
+  // with a tall vertical answer box to its left.
+  const w=[...item.word],r=[...item.reading];
+  const step=Math.min(68,Math.floor(365/Math.max(1,w.length-1)));
+  const fontSize=Math.min(75,step+10);
+  const topY=y+155;
+  const phraseX=x+cw*.66;
+  drawVertical(g,item.word,phraseX,topY,step,fontSize,'#253e5b');
+
+  const boxW=108;
+  const boxH=350;
+  const boxX=x+cw*.29-boxW/2;
+  const boxY=y+147;
+  round(g,boxX,boxY,boxW,boxH,10,'#fff','#7b9bb0',5);
+
+  if(answer){
+    // Fit every kana inside the answer rectangle, including long readings.
+    // Glyph centers are evenly spaced in the inner height, never on the border.
+    const chars=[...item.reading];
+    const insetY=22;
+    const innerH=boxH-2*insetY;
+    const cellH=innerH/Math.max(1,chars.length);
+    const size=Math.min(46,cellH*0.78,boxW-28);
+    chars.forEach((ch,i)=>text(g,ch,boxX+boxW/2,
+      boxY+insetY+cellH*(i+0.5),size,'#27739b','700','center'));
+  }
+}
+function bytes(s){return new TextEncoder().encode(s)}
+function join(parts){let len=parts.reduce((n,a)=>n+a.length,0),out=new Uint8Array(len),off=0;for(let p of parts){out.set(p,off);off+=p.length}return out}
+function makePDF(canvases){const all=[bytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n')],offset=[0];let total=all[0].length;const add=part=>{all.push(part);total+=part.length};function obj(id,stuff){offset[id]=total;add(bytes(id+' 0 obj\n'));add(stuff instanceof Uint8Array?stuff:bytes(stuff));add(bytes('\nendobj\n'))}
+const n=canvases.length,children=canvases.map((_,i)=>`${3+i*3} 0 R`).join(' ');obj(1,'<< /Type /Catalog /Pages 2 0 R >>');obj(2,`<< /Type /Pages /Kids [${children}] /Count ${n} >>`);
+canvases.forEach((canvas,i)=>{const id=3+i*3,imgId=id+1,contentId=id+2;const bin=atob(canvas.toDataURL('image/jpeg',.92).split(',')[1]);let jpeg=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)jpeg[k]=bin.charCodeAt(k);obj(id,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 ${imgId} 0 R >> >> /Contents ${contentId} 0 R >>`);obj(imgId,join([bytes(`<< /Type /XObject /Subtype /Image /Width ${PW} /Height ${PH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`),jpeg,bytes('\nendstream')]));const commands=bytes('q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n');obj(contentId,join([bytes(`<< /Length ${commands.length} >>\nstream\n`),commands,bytes('endstream')]))});const start=total;add(bytes(`xref\n0 ${3+n*3}\n0000000000 65535 f \n`));for(let i=1;i<3+n*3;i++)add(bytes(String(offset[i]).padStart(10,'0')+' 00000 n \n'));add(bytes(`trailer\n<< /Size ${3+n*3} /Root 1 0 R >>\nstartxref\n${start}\n%%EOF\n`));return new Blob(all,{type:'application/pdf'})}
+function download(answer){if(!selected.length){$('alert').textContent='先にことばを１つ以上えらんでください。';return}let blob=makePDF([makeCanvas(answer)]);let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`小２かんじ_${mode==='write'?'かきとり':'よみとり'}_${answer?'こたえ':'もんだい'}.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);$('alert').textContent='PDFを作成しました。'}
+$('problem').onclick=()=>download(false);$('answer').onclick=()=>download(true);redraw();
+</script></body></html>
